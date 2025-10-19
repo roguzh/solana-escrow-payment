@@ -200,16 +200,15 @@ pub fn approve_payment_agreement(
             payment_agreement.is_completed = true;
         }
 
-        (
-            should_complete,
-            payment_agreement.amount,
-        )
+        (should_complete, payment_agreement.amount)
     };
 
     // Now do the transfer if needed
     if should_complete {
         // Transfer lamports from PDA to receiver
-        ctx.accounts.payment_agreement.sub_lamports(transfer_amount)?;
+        ctx.accounts
+            .payment_agreement
+            .sub_lamports(transfer_amount)?;
         ctx.accounts.receiver.add_lamports(transfer_amount)?;
     }
 
@@ -255,16 +254,15 @@ pub fn cancel_payment_agreement(ctx: Context<CancelPaymentAgreement>, _name: Str
             payment_agreement.is_cancelled = true;
         }
 
-        (
-            should_cancel,
-            payment_agreement.amount,
-        )
+        (should_cancel, payment_agreement.amount)
     };
 
     // Return funds to payer if cancelled
     if should_cancel {
         // Transfer lamports from PDA to payer
-        ctx.accounts.payment_agreement.sub_lamports(transfer_amount)?;
+        ctx.accounts
+            .payment_agreement
+            .sub_lamports(transfer_amount)?;
         ctx.accounts.payer.add_lamports(transfer_amount)?;
     }
 
@@ -312,7 +310,9 @@ pub fn referee_intervene_complete_payment_agreement(
     };
 
     // Transfer funds from escrow to receiver
-    ctx.accounts.payment_agreement.sub_lamports(transfer_amount)?;
+    ctx.accounts
+        .payment_agreement
+        .sub_lamports(transfer_amount)?;
     ctx.accounts.receiver.add_lamports(transfer_amount)?;
 
     Ok(())
@@ -355,7 +355,9 @@ pub fn referee_intervene_cancel_payment_agreement(
     };
 
     // Return funds to payer when cancelled
-    ctx.accounts.payment_agreement.sub_lamports(transfer_amount)?;
+    ctx.accounts
+        .payment_agreement
+        .sub_lamports(transfer_amount)?;
     ctx.accounts.payer.add_lamports(transfer_amount)?;
 
     Ok(())
@@ -389,6 +391,12 @@ pub fn withdraw_expired_funds(ctx: Context<WithdrawExpiredFunds>, _name: String)
         !payment_agreement.is_cancelled,
         ErrorCode::AgreementAlreadyCancelled
     );
+
+    let transfer_amount = payment_agreement.amount;
+    ctx.accounts
+        .payment_agreement
+        .sub_lamports(transfer_amount)?;
+    ctx.accounts.payer.add_lamports(transfer_amount)?;
 
     Ok(())
 }
