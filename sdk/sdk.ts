@@ -18,7 +18,9 @@ export class EscrowPaymentSDK {
     });
   }
 
-  async getAgreementsAsPayer(payerPublicKey: anchor.web3.PublicKey) {
+  async getAgreementsAsPayer(
+    payerPublicKey: anchor.web3.PublicKey
+  ): Promise<anchor.ProgramAccount<PaymentAgreement>[]> {
     const agreements = await this.program.account.paymentAgreement.all([
       {
         memcmp: {
@@ -30,7 +32,9 @@ export class EscrowPaymentSDK {
     return agreements;
   }
 
-  async getAgreementsAsReceiver(receiverPublicKey: anchor.web3.PublicKey) {
+  async getAgreementsAsReceiver(
+    receiverPublicKey: anchor.web3.PublicKey
+  ): Promise<anchor.ProgramAccount<PaymentAgreement>[]> {
     const agreements = await this.program.account.paymentAgreement.all([
       {
         memcmp: {
@@ -42,7 +46,9 @@ export class EscrowPaymentSDK {
     return agreements;
   }
 
-  async getAgreementsAsReferee(refereePublicKey: anchor.web3.PublicKey) {
+  async getAgreementsAsReferee(
+    refereePublicKey: anchor.web3.PublicKey
+  ): Promise<anchor.ProgramAccount<PaymentAgreement>[]> {
     const agreements = await this.program.account.paymentAgreement.all([
       {
         memcmp: {
