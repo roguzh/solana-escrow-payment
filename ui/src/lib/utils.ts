@@ -2,6 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import nacl from "tweetnacl";
+import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,4 +40,34 @@ export const formatTimeRemaining = (timeRemaining: number): string => {
   const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
 
   return `${hours}h ${minutes}m`;
+};
+
+export const fetcher = async ({
+  url,
+  method = "GET",
+  headers = {},
+  body = "{}",
+}: {
+  url: string;
+  method: string;
+  headers?: any;
+  body?: any;
+}) => {
+  const fetchOptions = {
+    method,
+    headers,
+    data: body ? body : null,
+  };
+
+  try {
+    const response = await axios(url, fetchOptions);
+    if (response.status != 200) {
+      // Handle non-successful responses here if needed
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.data;
+    return data;
+  } catch (error: any) {
+    throw new Error(`Fetch error: ${error.message}`);
+  }
 };
